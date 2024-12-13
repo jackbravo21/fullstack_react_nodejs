@@ -1,0 +1,140 @@
+const tableProducts = require("../model/productModel");
+const getCurrentDateTime = require("../utils/dateUtils");
+const createError = require("../utils/createError");
+
+const allDate = getCurrentDateTime();
+
+
+async function productCreate(productName, productWay, productPrice, productDescription, productType, next){
+    try{
+        const product = await tableProducts.create({
+            name: productName,
+            way: productWay,
+            price: productPrice,
+            description: productDescription,
+            type: productType,        
+            created_at: allDate,
+        });
+
+        if(!product){
+            next(createError("Erro ao criar no DB...", 404));
+            return;
+        }
+        console.log("BackEnd: ", product);
+        return product;
+    }
+    
+    catch(error){
+        error.status = error.status || 500;
+        next(error);
+    }    
+};
+
+
+async function productEdit(productID, productName, productWay, productPrice, productDescription, productType, next){
+    try{
+        const product = await tableProducts.findByPk(productID);
+
+        if(!product){
+            next(createError("Erro ao buscar produto no DB...", 404));
+            return;
+        }
+
+        product.name = productName;
+        product.way = productWay;
+        product.price = productPrice;
+        product.description = productDescription;
+        product.type = productType;
+        
+        const saveProduct = await product.save();
+
+        if(!saveProduct){
+            next(createError("Erro ao salvar produto no DB...", 404));
+            return;
+        }
+
+        console.log("BackEnd: ", product);
+        return saveProduct;
+    }
+
+    catch(error){
+        error.status = error.status || 500;
+        next(error);
+    }
+};
+
+
+async function getProduct(id, next){
+    try{
+        const product = await tableProducts.findOne(id);
+
+        if(!product){
+            next(createError("Erro ao buscar produto no DB...", 404));
+            return;
+        }
+
+        console.log("BackEnd: ", product);
+        return product;
+    }
+    catch(error){
+        error.status = error.status || 500;
+        next(error);
+    }
+};
+
+
+async function selectAll(productType, next){
+    try{
+        const product = await tableProducts.findAll({
+            where: { type: productType }
+        });
+
+        if(!product){
+            next(createError("Erro ao buscar os produtos no DB...", 404));
+            return;
+        }
+
+        console.log("BackEnd: ", product);
+        return product;
+    }
+    catch(error){
+        error.status = error.status || 500;
+        next(error);
+    }
+};
+
+
+async function deleteProduct(id, next){
+    try{
+        const product = await tableProducts.findByPk(id);
+
+        if(!product){
+            next(createError("Erro ao deletar o produto no DB...", 404));
+            return;
+        }
+
+        await product.destroy();
+
+        if(!product){
+            next(createError("Erro ao deletar produto no DB...", 404));
+            return;
+        }
+
+        console.log("BackEnd: ", product);
+        return product;
+    }
+    
+    catch(error){
+        error.status = error.status || 500;
+        next(error);
+    }
+}
+
+
+module.exports = { productCreate, productEdit, getProduct, selectAll, deleteProduct };
+
+
+
+
+
+

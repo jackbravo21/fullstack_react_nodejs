@@ -1,0 +1,144 @@
+const tableUsers = require("../model/userModel");
+const getCurrentDateTime = require("../utils/dateUtils");
+const commandService = require("../service/userService");
+
+const allDate = getCurrentDateTime();
+
+
+const checkLogin = async(req, res) => {    
+  
+    console.log("Request body", req.body);
+
+    let selectUser;
+    const mail = req.body.mail;
+    const password = req.body.password;
+
+    try {        
+        selectUser = await tableUsers.findOne({
+            where: {
+                mail: mail,
+                password: password
+            }
+    });
+    
+        console.log("BackEnd: ", selectUser);
+        res.send(selectUser);
+    }
+    catch(error){
+        console.log(`Usuário não foi encontrado!`);
+        res.status(500).json({Message: `Usuário não foi encontrado.`});
+    }
+};
+
+
+const register = async(req, res) => {
+
+    const fullname      = req.body.fullname;
+    const mail          = req.body.mail;
+    const password      = req.body.password;
+
+    try {
+        const createUser = await tableUsers.create({
+            fullname: fullname,
+            mail: mail,
+            password: password,
+            created_at: allDate,
+        });        
+
+        console.log(createUser);
+        res.json({User: createUser});
+
+    }
+    catch(error){
+        console.error("Erro ao cadastrar usuário:", error);
+        res.status(500).json({ message: "Erro ao cadastrar usuário!", error});
+    }
+};
+
+
+const userEdit = async(req, res) => {
+    console.log("Request body", req.body);
+
+    const id            = req.body.id;
+    const fullname      = req.body.fullname;
+    const mail          = req.body.mail;
+    const password      = req.body.password;
+
+    try {
+        const editUser = await tableUsers.findByPk(id);
+
+        editUser.name = name;
+        editUser.fullname = fullname;
+        editUser.mail = mail;
+        editUser.password = password;
+
+        const saveUser = await editUser.save();
+
+        console.log(saveUser);
+        res.json(saveUser);
+    } 
+
+    catch(error) {
+        console.log(`Usuário ID ${id} não existe! Erro: ${error}`);
+        res.send(`Usuário ID ${id} não existe! Erro: ${error}`);
+    }
+}
+
+const deleteUser = async(req, res) => {
+    console.log("Request body", req.body);
+
+    const id = req.body.id;
+
+    try {
+        const userDelete = await tableUsers.findByPk(id);
+
+        const actionDelete = await userDelete.destroy();
+
+        console.log(`O Usuário ${id} foi DELETADO com SUCESSO! ${actionDelete}`);
+        res.send(`O Usuário ${id} foi DELETADO com SUCESSO! ${actionDelete}`);
+    } 
+
+    catch(error){
+        console.log(`Usuário ID ${id} não existe! Erro: ${error}`);
+        res.send(`Usuário ID ${id} não existe! Erro: ${error}`);
+    }
+}
+
+const getOne = async(req, res) => {
+    console.log("Request body", req.body);
+
+    const id = req.body.id;
+
+    try {
+        const userDelete = await tableUsers.findByPk(id);
+
+        console.log(userDelete);
+        res.send(userDelete);
+    } 
+
+    catch(error){
+        console.log(`Usuário ID ${id} não existe! Erro: ${error}`);
+        res.send(`Usuário ID ${id} não existe! Erro: ${error}`);
+    }
+}
+
+const getAll = async(req, res) => {
+
+        try {
+            const selectAll = await tableUsers.findAll({
+                attributes: { exclude: ['password'] }       // Exclui a coluna de senha
+            });
+
+            console.log(selectAll);
+            res.send(selectAll);
+        } 
+        
+        catch(error){
+            console.log(`Erro ao buscar usuários: ${error}`);
+            res.send(`Erro ao buscar usuários: ${error}`);
+        }
+
+}
+
+
+module.exports = { checkLogin, register, userEdit, deleteUser, getOne, getAll };

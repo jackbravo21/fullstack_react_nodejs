@@ -1,0 +1,135 @@
+const { userLogin, userCreate, userEdit, userDelete, getOneUser, getAllUser } = require("../service/userService");
+
+
+const checkLogin = async(req, res) => {    
+  
+    const { mail, password } = req.body;
+
+    try {       
+        const selectUser = await userLogin(mail, password);
+    
+        if (selectUser) {
+            console.log("BackEnd: ", selectUser);
+            res.send(selectUser);
+        } else {
+            res.status(404).json({ Message: "Usuário não foi encontrado." });
+        }
+    }
+
+    catch(error){
+        console.log(Usuário não foi encontrado!);
+        res.status(500).json({Message: Usuário não foi encontrado.});
+    }
+};
+
+
+const register = async(req, res) => {
+
+    const { fullname, mail, password } = req.body;
+    
+    try {
+        const createUser = await userCreate(fullname, mail, password);
+
+        if (createUser) {
+            console.log("BackEnd: ", createUser);
+            res.send(createUser);
+        } else {
+            res.status(404).json({ Message: "Erro ao cadastrar usuário." });
+        }
+    }
+
+    catch(error){
+        console.error("Erro ao cadastrar usuário:", error);
+        res.status(500).json({ message: "Erro ao cadastrar usuário!", error});
+    }
+};
+
+
+const editUser = async(req, res) => {
+
+    const { id, fullname, mail, password } = req.body;
+    
+    try {
+        const saveUser = await userEdit(id, fullname, mail, password);
+
+        if (saveUser) {
+            console.log("BackEnd: ", saveUser);
+            res.send(saveUser);
+        } else {
+            res.status(404).json({ Message: "Erro ao editar usuário." });
+        }
+    } 
+
+    catch(error) {
+        console.log(`Usuário ID ${id} não existe! Erro: ${error}`);
+        res.send(`Usuário ID ${id} não existe! Erro: ${error}`);
+    }
+};
+
+
+const deleteUser = async(req, res) => {
+
+    const id = req.body.id;
+
+    try {
+        const actionDelete = await userDelete(id);
+
+        if (actionDelete) {
+            console.log(`O Usuário ${id} foi DELETADO com SUCESSO! ${actionDelete}`);
+            res.send(actionDelete);
+        } else {
+            res.status(404).json({ Message: "Erro ao editar usuário." });
+        }
+    } 
+
+    catch(error){
+        console.log(`Usuário ID ${id} não existe! Erro: ${error}`);
+        res.send(`Usuário ID ${id} não existe! Erro: ${error}`);
+    }
+}
+
+
+const getOne = async(req, res) => {
+    console.log("Request body", req.body);
+
+    const id = req.body.id;
+
+    try {
+        const getUser = await getOneUser(id);
+
+        if (getUser) {
+            console.log(`O Usuário ${id} encontrado! ${getUser}`);
+            res.send(getUser);
+        } else {
+            res.status(404).json({ Message: "Erro ao encontrar usuário." });
+        }
+    } 
+
+    catch(error){
+        console.log(`Usuário ID ${id} não existe! Erro: ${error}`);
+        res.send(`Usuário ID ${id} não existe! Erro: ${error}`);
+    }
+}
+
+
+const fetchAll = async(req, res) => {
+
+        try {
+            const getAll = await getAllUser();
+
+            if (getAll) {
+                console.log(`${getAll}`);
+                res.send(getAll);
+            } else {
+                res.status(404).json({ Message: "Erro ao encontrar usuário." });
+            }
+        } 
+        
+        catch(error){
+            console.log(`Erro ao buscar usuários: ${error}`);
+            res.send(`Erro ao buscar usuários: ${error}`);
+        }
+}
+
+
+module.exports = { checkLogin, register, editUser, deleteUser, getOne, fetchAll };

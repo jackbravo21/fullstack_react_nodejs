@@ -1,0 +1,120 @@
+const { productCreate, productEdit, actionDelete, getProduct, selectAll } = require("../service/productService");
+const createError = require("../utils/createError");
+
+
+const registerProduct = async(req, res, next) => {
+
+    const {name, way, price, description, type} = req.body;
+
+    try{
+        const createProduct = await productCreate(name, way, price, description, type);
+
+        if (!createProduct) {
+            next(createError("Erro ao cadastrar produto!", 404));
+            return;             // Passa o erro para o middleware de erro
+        } 
+        
+        console.log("BackEnd: ", createProduct);
+        res.status(200).json(createProduct);
+    }
+
+    catch(error){
+        error.status = error.status || 500;     //Define status padrão caso não exista;
+        next(error);
+    }
+};
+
+
+const editProduct = async(req, res, next) => {
+    console.log("Request body", req.body);
+
+    const {id, name, way, price, description, type} = req.body;
+
+    try {
+        const edit = await productEdit(id, name, way, price, description, type);
+
+        if (!edit) {
+            next(createError("Erro ao editar produto!", 404));
+            return; 
+        }
+
+        console.log("BackEnd: ", edit);
+        res.status(200).json(edit);     
+    } 
+
+    catch(error) {
+        error.status = error.status || 500;
+        next(error);
+    }
+}
+
+const deleteProduct = async(req, res, next) => {
+
+    const id = req.body.id;
+
+    try {
+        const toDelete = await actionDelete(id);
+
+        if (!toDelete) {
+            next(createError(`Produto ID ${id} não existe!`, 404));
+            return; 
+        } 
+
+        console.log("BackEnd: ", toDelete);
+        res.status(200).json(toDelete);
+    } 
+
+    catch(error){
+        error.status = error.status || 500;
+        next(error);
+    }
+}
+
+const getOneProduct = async(req, res, next) => {
+
+    const id = req.body.id;
+
+    try {
+        const oneProduct = await getProduct(id);
+
+        if (!oneProduct) {
+            next(createError(`Produto ID ${id} não existe!`, 404));
+            return; 
+        } 
+
+        console.log("BackEnd: ", oneProduct);
+        res.status(200).json(oneProduct);
+    } 
+
+    catch(error){
+        error.status = error.status || 500;
+        next(error);
+    }
+}
+
+const getAllProducts = async(req, res) => {
+
+    //req.params.type;
+    const type = req.body.type;
+
+        try {
+            const getAll = await selectAll(type);
+
+            if(!getAll) {
+                next(createError(`Erro ao buscar produtos.`, 404));
+                return; 
+            } 
+            else{
+                console.log("BackEnd: ", getAll);
+                res.status(200).json(getAll);
+            }
+        }
+     
+        catch(error){
+            error.status = error.status || 500;
+            next(error);
+        }
+}
+
+
+module.exports = { registerProduct, editProduct, deleteProduct, getOneProduct, getAllProducts };
