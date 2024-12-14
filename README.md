@@ -20,6 +20,7 @@ Criptografia: Implementação de bcrypt para proteger senhas.
 Multer: Suporte para upload de arquivos.
 Sequelize: ORM para interação com o banco de dados MySQL.
 Tokens e Cookies: Utilização de jsonwebtoken para autenticação via tokens.
+Mysql: Banco de dados relacional.
 
 - Clone o repositório.
 Instale as dependências:
