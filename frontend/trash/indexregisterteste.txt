@@ -1,0 +1,126 @@
+import React, {useState} from 'react';
+import './index.css';
+
+export default function Cadastro()
+{
+
+    const[passwd, setpasswd] = useState("password");
+    const[revealpasswd, revealsetpasswd] = useState("password");
+
+    function showpasswd(){
+        if(passwd === "password")
+        {
+            setpasswd("text");
+        }
+        else
+        {
+            setpasswd("password");
+        }
+    }
+
+    function showconfirmpasswd(){
+        if(revealpasswd === "password")
+        {
+            revealsetpasswd("text");
+        }
+        else
+        {
+            revealsetpasswd("password");
+        }
+    }
+
+
+    return(
+                    
+    <div className="container">
+        <form>
+        <h1 className="commumtitle">Registre-se:</h1>
+
+        <div className="row">
+            <div className="col25">
+                <label for="fname">Primeiro Nome:</label>
+            </div>
+            <div className="col75">
+                <input type="text" id="fname" name="firstname" placeholder="Seu nome..."></input>
+            </div>
+        </div>
+
+        <div className="row">
+            <div className="col25">
+                <label for="lname">Sobrenome:</label>
+            </div>
+            <div className="col75">
+                <input type="text" id="lname" name="lastname" placeholder="Seu sobrenome..."></input>
+            </div>
+        </div>
+
+        <div className="row">
+            <div className="col25">
+                <label for="gender">Gênero:</label>
+            </div>
+            <div className="col75">
+                <select id="gender" name="gender" placeholder="Escolha...">
+                    <option className="option_disable" value="disabilitado" selected disabled hidden>Selecione...</option>
+                    <option value="homem">Homem</option>
+                    <option value="mulher">Mulher</option>
+                    <option value="trans">Trans</option>
+                    <option value="indefinido">Indefinido</option>
+                    <option value="fantasminha">Fantasminha Camarada</option>
+                    <option value="algum">Algum que eu inventei...</option>
+                </select>
+            </div>
+        </div>
+
+        <div className="row">
+            <div className="col25">
+                <label for="description">Sua descrição do perfil:</label>
+            </div>
+            <div className="col75">
+                <textarea className="description" id="description" name="description" placeholder="Descreva-se..."></textarea>
+            </div>
+        </div>
+
+        <div className="row">
+            <div className="col25">
+                <label for="email">E-mail:</label>
+            </div>
+            <div className="col75">
+                <input type="mail" id="mail" name="mail" placeholder="Email de cadastro..."></input>
+            </div>
+        </div>
+
+        <div className="row">
+            <div className="col25">
+                <label for="password">Senha:</label>
+            </div>
+            <div className="col75">
+                <input type={passwd} id="passwd" name="passwd" placeholder="Digite sua senha..."></input>
+            </div>
+            <div className="col75">
+                <button className="revelar" onClick={showpasswd}>Mostrar senha</button>
+            </div>
+        </div>
+        
+        <div className="row">
+            <div className="col25">
+                <label for="confimpassword">Confirmar Senha:</label>
+            </div>
+            <div className="col75">
+                <input type={revealpasswd} id="confirmpasswd" name="confirmpasswd" placeholder="Confirme sua senha..."></input>
+            </div>
+            <div className="col75">
+                <button className="revelar" onClick={showconfirmpasswd}>Mostrar senha</button>
+            </div>
+        </div>
+        
+        <div className="row">
+            <div>
+                <button className="buttonsubmit" type="buttonsubmit" value="Submit">Enviar</button>
+            </div>
+        </div>
+        </form>
+    </div>
+
+
+    );
+}

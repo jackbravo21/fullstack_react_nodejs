@@ -1,0 +1,52 @@
+.containerSection {
+  padding: 16px;
+  margin-top: 20px;
+}
+
+.commumtitle {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.platesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* 4 colunas se o espaço permitir */
+  gap: 20px;
+}
+
+.platesItem {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 6px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.buttonGroup {
+  /* display: flex; */
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.central {
+  margin: 8px 0;
+}
+
+.centralImage {
+  margin: 8px 0;
+  width: 100%; /* Faz com que a imagem ocupe 100% da largura do contêiner */
+  max-width: 290px; /* Define um limite máximo para a largura da imagem */
+  height: auto; /* A altura será ajustada automaticamente com base na proporção */
+  aspect-ratio: 29 / 32; /* Mantém a proporção da imagem */
+  object-fit: cover; /* A imagem vai cobrir a área sem distorção */
+}
+
+
+/* alinha todos os botoes para o final do container principal, joga todos la embaixo */
+.buttonContainer {
+  justify-content: space-between;
+  margin-top: auto; /* Move os botões para o final do container */
+  display: flex;
+  /* gap: 10px; /* Espaçamento entre os botões */
+}

@@ -1,0 +1,64 @@
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchProducts } from '../../redux/products/slice';
+import { useNavigate } from 'react-router-dom';
+import { FaUserEdit, FaTrashAlt } from "react-icons/fa";
+import { LuNotebookPen } from "react-icons/lu";
+import EditButton from '../../components/Buttons/edit/index';
+import DeleteButton from '../../components/Buttons/delete/index';
+import './index.css';
+
+
+export default function Products() {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    // Pegando os produtos diretamente da store
+    const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+    const products = useSelector((state) => state.product.products);
+    const loading = useSelector((state) => state.product.loading);
+    const error = useSelector((state) => state.product.error);
+
+    function addProduct(){
+        navigate('/addproduct');
+    }
+
+    useEffect(() => {
+        console.log("Buscando produtos...");
+        dispatch(fetchProducts({ type: "products" }));
+    }, [dispatch]);
+
+    if (loading) {
+        return <div>Carregando produtos...</div>;
+    }
+
+    return (
+        <div className="containerSection">
+            
+            <h2 className="commumtitle">Produtos:</h2>
+
+            {products.length === 0 && <p>Não há produtos disponíveis.</p>}
+
+            {isLoggedIn === true ? (
+                <a className="buttonsubmit" onClick={addProduct}>Adicionar</a>
+                ) : null}
+
+            {products.map((product) => (
+                <div key={product.id} className="productItem">
+                    <hr />
+                    <h3>{product.name}</h3>
+                    <p className='central'><strong>Preço:</strong> R$ {product.price}</p>
+                    <p className='central'><strong>Descrição:</strong> {product.description}</p>
+                    <p className='central'><strong>Tipo:</strong> {product.type}</p>
+                    <p className='central'><strong>Data de Criação:</strong> {product.created_at}</p>
+                    {isLoggedIn === true ? (
+                        <p><LuNotebookPen style={{color: 'blue'}} /><FaUserEdit style={{color: 'blue'}} /><FaTrashAlt style={{color: 'red'}} /></p>
+                    ) : null}
+                          <button>Excluir</button>
+                </div>
+            ))}
+
+            {error && <p>{error}</p>}
+        </div>
+    );
+}

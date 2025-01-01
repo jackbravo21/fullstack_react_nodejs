@@ -1,0 +1,221 @@
+Tipos de Dados
+
+String:
+
+Validação de texto.
+
+Joi.string()                     // Aceita qualquer string.
+Joi.string().min(3)              // Mínimo de 3 caracteres.
+Joi.string().max(50)             // Máximo de 50 caracteres.
+Joi.string().email()             // Valida e-mails.
+Joi.string().pattern(/regex/)    // Valida com base em uma expressão regular.
+Joi.string().valid('valor1', 'valor2')  // Apenas valores específicos são válidos.
+Joi.string().required()          // Campo obrigatório.
+
+
+Number:
+
+Validação de números.
+
+Joi.number()                     // Aceita qualquer número.
+Joi.number().integer()           // Apenas números inteiros.
+Joi.number().min(0)              // Número mínimo permitido.
+Joi.number().max(100)            // Número máximo permitido.
+Joi.number().positive()          // Apenas números positivos.
+Joi.number().negative()          // Apenas números negativos.
+
+
+Boolean:
+
+Validação de valores booleanos.
+
+Joi.boolean()                    // Aceita `true` ou `false`.
+Date:
+
+
+Validação de datas.
+
+Joi.date()                       // Valida se é uma data.
+Joi.date().greater('now')        // Data maior que agora.
+Joi.date().less('2024-01-01')    // Data menor que um valor específico.
+
+
+Array:
+
+Validação de listas.
+
+Joi.array()                      // Aceita qualquer array.
+Joi.array().items(Joi.string())  // Apenas strings no array.
+Joi.array().min(1)               // Pelo menos 1 item no array.
+Joi.array().max(5)               // Máximo de 5 itens no array.
+Joi.array().length(3)            // Array com exatamente 3 itens.
+
+
+Object:
+
+Validação de objetos aninhados.
+
+Joi.object({
+    name: Joi.string().required(),
+    price: Joi.number().min(0).required()
+})
+
+
+Operações Avançadas
+
+Campos opcionais e obrigatórios:
+
+Com required e optional.
+
+Joi.string().required();         // Campo obrigatório.
+Joi.string().optional();         // Campo opcional.
+
+
+Mensagens personalizadas:
+
+Substituir mensagens padrão de erro.
+
+Joi.string().min(3).max(50).messages({
+    'string.min': 'O campo precisa ter no mínimo {#limit} caracteres.',
+    'string.max': 'O campo pode ter no máximo {#limit} caracteres.'
+})
+
+
+Validação condicional:
+
+Regras diferentes dependendo de outros campos.
+
+Joi.object({
+    type: Joi.string().valid('A', 'B').required(),
+    value: Joi.when('type', {
+        is: 'A',
+        then: Joi.number().required(),
+        otherwise: Joi.forbidden()
+    })
+})
+
+
+Definir valores padrão:
+
+Usar default para preencher valores automaticamente.
+
+Joi.string().default('Valor padrão');
+
+
+
+Exemplo Prático de Uso:
+
+Vamos validar um produto com campos como name, price, e type:
+
+
+const Joi = require('joi');
+
+const productSchema = Joi.object({
+    name: Joi.string().min(3).max(255).required().messages({
+        'string.empty': 'O nome é obrigatório.',
+        'string.min': 'O nome deve ter no mínimo {#limit} caracteres.',
+        'string.max': 'O nome pode ter no máximo {#limit} caracteres.'
+    }),
+    price: Joi.number().positive().required().messages({
+        'number.base': 'O preço deve ser um número.',
+        'number.positive': 'O preço deve ser positivo.',
+        'any.required': 'O preço é obrigatório.'
+    }),
+    type: Joi.string().valid('electronic', 'furniture', 'clothing').required().messages({
+        'any.only': 'O tipo deve ser "electronic", "furniture" ou "clothing".'
+    }),
+    description: Joi.string().max(500).optional()
+});
+
+// Validando dados
+const { error, value } = productSchema.validate({
+    name: "TV Samsung",
+    price: 2500,
+    type: "electronic"
+});
+
+if (error) {
+    console.log(error.details.map((d) => d.message).join(', '));
+} else {
+    console.log("Dados válidos:", value);
+}
+
+
+
+
+
+
+
+
+
+
+// schemas/productSchema.js
+
+const Joi = require('joi');
+
+// Esquema para criação de produtos
+const createProductSchema = Joi.object({
+    name: Joi.string().min(3).max(255).required(),
+    price: Joi.number().min(0).required(),
+    description: Joi.string().max(500).optional(),
+    type: Joi.string().valid('electronic', 'furniture', 'clothing').required()
+});
+
+// Esquema para edição de produtos (alguns campos opcionais)
+const editProductSchema = Joi.object({
+    name: Joi.string().min(3).max(255).optional(),
+    price: Joi.number().min(0).optional(),
+    description: Joi.string().max(500).optional(),
+    type: Joi.string().valid('electronic', 'furniture', 'clothing').optional()
+});
+
+module.exports = {
+    createProductSchema,
+    editProductSchema
+};
+
+
+
+const { productSchema } = require('../schemas/productSchema');
+
+async function productCreate(req, res, next) {
+    const { error } = productSchema.validate(req.body);
+
+    if (error) {
+        // Se os dados forem inválidos, retorna um erro 400 com a mensagem detalhada
+        return res.status(400).json({
+            error: error.details.map((detail) => detail.message).join(', ')
+        });
+    }
+
+
+
+
+
+
+
+
+const { createProductSchema, editProductSchema } = require('../schemas/productSchema');
+
+async function productCreate(req, res, next) {
+    // Valida os dados do req.body usando o esquema correto
+    const { error } = createProductSchema.validate(req.body);
+
+    if (error) {
+        // Retorna um erro 400 com as mensagens detalhadas
+        return res.status(400).json({
+            error: error.details.map((detail) => detail.message).join(', ')
+        });
+    }
+
+
+
+async function productEdit(req, res, next) {
+    const { error } = editProductSchema.validate(req.body);
+
+    if (error) {
+        return res.status(400).json({
+            error: error.details.map((detail) => detail.message).join(', ')
+        });
+    }
+

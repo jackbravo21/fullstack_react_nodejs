@@ -1,0 +1,61 @@
+* {
+    box-sizing: border-box;
+  }
+  
+  .commumtitle{
+    text-align: center;
+  }
+  
+  .containerSection {
+    max-width: 900px;
+    margin: 0px;
+    background: #fff;
+    padding: 0px;
+    border-radius: 10px;
+
+    display: flex;               /* Adiciona o Flexbox */
+    flex-direction: column;      /* Organiza os itens em coluna */
+    align-items: center;         /* Centraliza os itens horizontalmente */
+  }
+
+  .iconEdit{
+    color: rgb(0, 110, 255);
+    cursor: pointer;
+  }
+
+  .iconDelete{
+    color: rgb(255, 60, 0);
+    cursor: pointer;
+  }
+  
+ table.ex1 {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  td.ex1, th.ex1 {
+    border: 1px solid #ffffff;
+    text-align: left;
+    padding: 8px;
+  }
+  
+  tr.ex1:nth-child(even) {
+    background-color: #ffffff;
+  }
+
+  table.ex8, th.ex8, td.ex8 {
+    border: 1px solid rgb(0, 0, 0);
+    border-collapse: collapse;
+    margin: 0 auto;
+  }
+  
+  th.ex8, td.ex8 {
+    padding: 0px 10px 0px 10px;
+    background-color: #d1d1d1;
+  }
+
+  .tableWrapper {
+    width: auto;  /* Ajuste conforme necessário */
+    margin: auto;  /* Centraliza a div */
+  }

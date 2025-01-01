@@ -1,0 +1,143 @@
+const { userLogin, userCreate, userEdit, userDelete, getOneUser, getAllUser } = require("../service/userService");
+
+
+const checkLogin = async(req, res, next) => {    
+  
+    const { mail, password } = req.body;
+
+    try {
+        const user = await userLogin(mail, password);
+
+        if (!user) {
+            const error = new Error("Usuário não encontrado.");
+            error.status = 404;
+            next(error);            // Passa o erro para o middleware de erro
+        } 
+        else{
+            console.log("BackEnd: ", user);
+            res.status(200).json(user);
+        }
+    } 
+    
+    catch (error) {
+        next(error);                // Encaminha o erro para o middleware de erro
+    }
+};
+
+
+const register = async(req, res, next) => {
+
+    const { fullname, mail, password } = req.body;
+    
+    try {
+        const createUser = await userCreate(fullname, mail, password);
+
+        if(!createUser) {
+            const error = new Error("Erro ao cadastrar usuário.");
+            error.status = 404;
+            next(error); 
+        } else {
+            console.log("BackEnd: ", createUser);
+            res.status(200).send(createUser);
+        }
+    }
+
+    catch(error){
+        next(error);
+    }
+};
+
+
+const editUser = async(req, res, next) => {
+
+    const { id, fullname, mail, password } = req.body;
+    
+    try {
+        const saveUser = await userEdit(id, fullname, mail, password);
+
+        if(!saveUser) {
+            const error = new Error("Erro ao editar usuário.");
+            error.status = 404;
+            next(error);     
+        } else {
+            console.log("BackEnd: ", saveUser);
+            res.send(saveUser);
+        }
+    } 
+
+    catch(error) {
+        next(error);
+    }
+};
+
+
+const deleteUser = async(req, res, next) => {
+
+    const id = req.body.id;
+
+    try {
+        const actionDelete = await userDelete(id);
+
+        if(!actionDelete) {
+            const error = new Error("Erro ao deletar usuário.");
+            error.status = 404;
+            next(error);  
+        } else {
+            console.log(`O Usuário ${id} foi DELETADO com SUCESSO! ${actionDelete}`);
+            res.send(actionDelete);
+        }
+    } 
+
+    catch(error){
+        next(error);
+    }
+};
+
+
+const getOne = async(req, res, next) => {
+    console.log("Request body", req.body);
+
+    const id = req.body.id;
+
+    try {
+        const getUser = await getOneUser(id);
+
+        if (!getUser) {
+            const error = new Error(`Erro ao encontrar usuário. ${getUser}`);
+            error.status = 404;
+            next(error);
+
+        } else {
+            console.log(`O Usuário ${id} encontrado! ${getUser}`);
+            res.send(getUser);
+        }
+    } 
+
+    catch(error){
+        next(error);
+    }
+};
+
+
+const fetchAll = async(req, res, next) => {
+
+        try {
+            const getAll = await getAllUser();
+
+            if (!getAll) {
+                const error = new Error(`Erro ao encontrar os usuários. ${getUser}`);
+                error.status = 404;
+                next(error);
+            } else {
+                console.log(`${getAll}`);
+                res.send(getAll);
+            }
+        } 
+        
+        catch(error){
+            next(error);
+        }
+}
+
+
+module.exports = { checkLogin, register, editUser, deleteUser, getOne, fetchAll };

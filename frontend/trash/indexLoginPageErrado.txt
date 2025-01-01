@@ -1,0 +1,133 @@
+import React, {useState, useEffect} from 'react';
+import './index.css';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginRequest } from '../../redux/users/slice';
+
+export default function Login()
+{
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const [mail, setMail] = useState();
+    const [password, setPassword] = useState();
+    const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+    //const testeMail = useSelector((state) => state.user.userData.mail);
+
+    useEffect(()=>
+    {
+        if(isLoggedIn !== null && isLoggedIn !== undefined && isLoggedIn !== "")
+        {
+        alert("Você ja Logou com usuario: " + mail);
+        localStorage.setItem('mail', mail);
+        navigate('/home');
+        window.location.reload();
+        }
+    }, []);
+
+    function handleChangeMail(e)
+    {
+        e.preventDefault();
+        setMail(e.target.value);
+    }
+    function handleChangePasswd(e)
+    {
+        e.preventDefault();
+        setPassword(e.target.value);
+    }
+
+    function home(e)
+    {
+        e.preventDefault();
+
+        console.log("mail: ", mail);
+        console.log("password: ", password);
+
+        if(mail === "" || mail === undefined || password === "" || password === undefined)
+        {
+            alert("Digite TODOS os dados do usuário!")
+            return;
+        }
+
+        else{
+            dispatch(loginRequest({
+                mail: mail,
+                password: password,
+            }));
+            
+            
+            if(isLoggedIn)
+            {
+                console.log(isLoggedIn); 
+                localStorage.setItem('mail', mail);
+                localStorage.setItem('isLoggedIn', isLoggedIn);
+                alert("Você Logou com usuario: " + mail);
+                navigate('/home');
+                window.location.reload();
+            }
+            else{
+                alert("Verifique seu usuário ou senha!");
+            }            
+        }
+    }
+
+    function register()
+    {
+        navigate('/register');
+    }
+
+    function forgot()
+    {
+        navigate('/forgotpasswd');
+    }
+
+    return(
+
+    /* ================================== */
+                   
+<div>
+    <div className="container">
+    <section className="containerSection">
+
+        <form>
+        <h1 className="commumtitle">Entrar:</h1>
+
+        <div className="row">
+            <div className="col25">
+                <label>E-mail:</label>
+            </div>
+            <div className="col75">
+                <input type="mail" id="mail" name="mail" onChange={handleChangeMail} placeholder="Email de cadastro..."></input>
+            </div>
+        </div>
+
+        <div className="row">
+            <div className="col25">
+                <label>Senha:</label>
+            </div>
+            <div className="col75">
+                <input type="password" id="passwd" name="passwd" onChange={handleChangePasswd} placeholder="Digite sua senha..."></input>
+            </div>
+        </div>
+        <br />
+        <div class="containerCentral">
+            <button className="buttonlogin" type="button" value="Submit" onClick={home}>Entrar</button>
+        </div>    
+        </form>
+
+        <br /><br />
+        <hr />
+
+        <p className="login"><a onClick={forgot}>Esqueceu a senha?</a></p>
+
+
+        <hr />
+        <p className="login"><a onClick={register}>Não tem uma conta?<br />Cadastre-se!</a></p>
+
+    </section>
+    </div>
+    
+    <br /><br />
+</div>
+
+    );
+}

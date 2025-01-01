@@ -1,0 +1,135 @@
+import { call, put, takeLatest } from 'redux-saga/effects';
+import axios from 'axios';
+import { desactivateUser, editUser, fetchUsersSuccess, loginFailure, loginSuccess } from './slice';
+import { createUserSuccess } from './slice';
+
+const url = "http://localhost:9000/users/";
+
+function* tryCreateUser(action){
+    try{
+        console.log("Criando usuário no DB...");
+        
+        const response = yield call(axios.post, url+"create", {
+            fullname: action.payload.name,
+            mail: action.payload.mail,
+            password: action.payload.password,
+        });
+
+        //Dispara a action createUserSuccess com os dados da resposta;
+        yield put(createUserSuccess(response.data));
+    }
+
+    catch(error){
+        yield put(createUserFailure(error.message));        //Passando o erro para a action;
+        console.error("Erro ao criar usuário!", error);
+    } 
+}
+
+//Funcao que chama API Rest de login;
+function* loginUser(action){
+    try{
+        console.log("Verificando no DB...");
+
+        //Faz a chamada na API do backend para autenticar;
+        const response = yield call(axios.post, url+"check", {
+            mail: action.payload.mail,
+            password: action.payload.password,
+        });
+
+        //Verifica se a resposta é valida (status 200 e dados presentes);
+        if(response.status === 200 && response.data){
+            yield put(loginSuccess(response.data));     //Salva no redux se for sucesso;
+        }
+        else{
+            yield put(loginFailure("Usuário ou senha incorreto!"));     //Caso a resposta seja invalida;
+        }
+    }
+    catch(error){
+        //Em caso de erro, dispara a acao de falha;
+        yield put(loginFailure(error.message));
+        console.error("Erro ao realizar login: ", error);
+    }
+};
+
+function* userDesactivate(action){
+    try{
+        console.log("Buscando usuário do DB...");
+
+        const response = yield call(axios.put, url+"desactivate", {
+            id: action.payload.id
+        });
+
+        yield put(desactivateUserSuccess(response.data));
+    }
+    
+    catch(error){
+        yield put(desactivateUserFailure(error.message));
+        console.error("Erro ao desativar usuário!", error);
+    }
+};
+
+function* getOneUser(action){
+    try {
+        console.log("Buscando usuário no DB...");
+
+        const response = yield call(axios.post, url+"one", {
+            id: action.payload.id,
+        });
+
+        yield put(getUserSuccess(response.data));
+    } 
+    
+    catch(error){
+        yield put(getUserFailure(error.message));
+        console.error("Erro ao desativar usuário!", error);
+    }
+};
+
+function* userEdit(action){
+    try{
+        console.log("Editando usuário no DB...");
+
+        const response = yield call(axios.put, url+"edit", {
+            id: action.payload.id,
+            fullname: action.payload.name,
+            mail: action.payload.mail,
+            password: action.payload.password,
+        });
+
+        //Dispara a action createUserSuccess com os dados da resposta;
+        yield put(editUserSuccess(response.data));
+    }
+
+    catch(error){
+        yield put(editUserFailure(error.message));  //Passando o erro para a action;
+        console.error("Erro ao criar usuário!", error);
+    }
+};
+
+function* allUsers(){
+    try{
+        console.log("Bsucando usuários no DB...");
+
+        const response = yield call(axios.get, url+"all");
+
+        yield put(fetchUsersSuccess(response.data));
+    }
+
+    catch(error){
+        yield put(fetchUsersFailure(error.message));
+        console.error("Erro ao buscar usuários!", error);
+    }
+};
+
+//Observa a acao de login;
+function* userSaga()
+{
+    yield takeLatest('user/createUser', tryCreateUser);
+    yield takeLatest('user/loginRequest', loginUser);
+    yield takeLatest('user/desactivateUser', userDesactivate);
+    yield takeLatest('user/getUser', getOneUser);
+    yield takeLatest('user/editUser', userEdit); 
+    yield takeLatest('user/fetchUsers', allUsers); 
+}
+
+export default userSaga;

@@ -1,0 +1,8 @@
+function createError(message, status) {
+    const error = new Error(message);
+    error.status = status || 500; // Define um status padrão caso não seja fornecido
+    delete error.stack; // Remove a stack trace para não exibir o caminho
+    return error;
+}
+
+module.exports = createError;

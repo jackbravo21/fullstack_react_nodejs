@@ -1,0 +1,104 @@
+import { call, put, takeLatest } from 'redux-saga/effects';
+import axios from 'axios';
+import { createProductSuccess, createProductFailure, editProductSuccess, editProductFailure, deleteProductSuccess, deleteProductFailure, getProductSuccess, getProductFailure, fetchProductsSuccess, fetchProductsFailure } from './slice';
+
+const url = "http://localhost:9000/products/";
+
+function* createProduct(action){
+    try{
+        console.log("Criando produto no DB...");
+        
+        const response = yield call(axios.post, url+"create", {
+            name: action.payload.name,
+            price: action.payload.price,
+            description: action.payload.description,
+            type: action.payload.type,
+        });
+        yield put(createProductSuccess(error.message));
+    }
+    
+    catch(error){
+        yield put(createProductFailure(response.data));
+        console.error("Erro ao criar produto: ", error);    
+    }
+    
+};
+
+function* editOneProduct(action){
+    try{
+        console.log("Editando produto no DB...");
+
+        const response = yield call(axios.put, url+"edit", {
+            id: action.payload.id,
+            name: action.payload.name,
+            price: action.payload.price,
+            description: action.payload.description,
+            type: action.payload.type,
+        });
+        yield put(editProductSuccess(response.data));
+    } 
+    
+    catch(error){
+        yield put(editProductFailure(error.message));
+        console.error("Erro ao editar produto: ", error);   
+    }
+};
+
+function* deleteOneProduct(action){
+    try{
+        console.log("Deletando produto no DB...");
+
+        const response = yield call(axios.delete, url+"delete", {
+            id: action.payload.id,
+        });
+        yield put(deleteProductSuccess(response.data));
+    }
+
+    catch(error){
+        yield put(deleteProductFailure(error.message));
+        console.error("Erro ao deletar produto: ", error);    
+    }    
+};
+
+function* getOneProduct(action){
+    try{
+        console.log("Buscando um produto no DB...");
+        
+        const response = yield call(axios.get, url+"one", {
+            id: action.payload.id,
+        });
+        yield put(getProductSuccess(response.data));
+    }
+    
+    catch(error){
+        yield put(getProductFailure(error.message));
+        console.error("Erro ao buscar um produto: ", error);    
+    }
+};
+
+function* getAllProducts(action){
+    try{
+        console.log("Buscando produtos no DB...");
+
+        const response = yield call(axios.get, url+"all");
+
+        yield put(fetchProductsSuccess(response.data));
+    }
+    
+    catch(error){
+        yield put(fetchProductsFailure(error.message));
+        console.error("Erro ao buscar vários produtos: ", error);    
+    }   
+};
+
+//Observa a acao de login;
+function* productSaga()
+{
+    yield takeLatest('product/createProduct', createProduct);
+    yield takeLatest('product/editProduct', editOneProduct);
+    yield takeLatest('product/deleteProduct', deleteOneProduct);
+    yield takeLatest('product/getProduct', getOneProduct);
+    yield takeLatest('product/fetchProducts', getAllProducts); 
+}
+
+export default productSaga;

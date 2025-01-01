@@ -1,0 +1,170 @@
+const tableUsers = require("../model/userModel");
+const getCurrentDateTime = require("../utils/dateUtils");
+
+const allDate = getCurrentDateTime();
+
+
+async function userLogin(userMail, userPassword, next){
+    try{
+        const selectUser = await tableUsers.findOne({
+            where: {
+                mail: userMail,
+                password: userPassword,
+                attributes: { exclude: ['password'] } // Remove o campo senha
+            }
+        });            
+        
+        if(!selectUser){
+            next(createError("Usuário não criado no DB...", 404));
+            return;                     //Evita retorno adicional após o erro;
+        }
+
+        console.log("BackEnd: ", selectUser);
+        return selectUser;
+    } 
+    
+    catch(error){
+        error.status = error.status || 500;     //Define status padrão caso não exista;
+        next(error);                            //Encaminha erros de execução;
+    }    
+};
+
+
+async function userCreate(userFullname, userMail, userPassword, next){
+    try{
+        const createUser = await tableUsers.create({
+            fullname: userFullname,
+            mail: userMail,
+            password: userPassword,
+            created_at: allDate,
+        });
+
+        if(!createUser){
+            const error = new Error("Usuário não criado no DB...");
+            error.status = 404;
+            next(error);
+            return;
+        }
+
+        console.log("BackEnd: ", createUser);
+        return createUser;
+    }
+    
+    catch(error){
+        error.status = error.status || 500;
+        next(error);
+    }
+};
+
+
+async function userEdit(userID, userFullname, userMail, userPassword, next){
+    try{
+        const editUser =  tableUsers.findByPk(userID);
+
+        if(!editUser){
+            const error = new Error("Usuário não encontrado no DB...");
+            error.status = 404;
+            next(error);
+            return;  
+        }
+
+        editUser.fullname   = userFullname;
+        editUser.mail       = userMail;
+        editUser.password   = userPassword;
+
+        const saveUser      = await editUser.save();
+        return saveUser;
+    }
+
+    catch(error){
+        console.log("BackEnd: ", editUser);
+        return editUser;
+    }
+};
+
+
+async function userDelete(userID, next){
+    try{
+        const userDelete = await tableUsers.findByPk(userID);
+     
+        if(!userDelete){
+            const error = new Error("Usuário não encontrado no DB...");
+            error.status = 404;
+            next(error);
+            return;
+        }
+        else{
+            try{
+                const actionDelete = await userDelete.destroy();
+
+                if(!actionDelete){
+                    const error = new Error("Erro ao deletar usuário do DB...");
+                    error.status = 404;
+                    next(error);
+                    return;
+                }
+
+                return actionDelete;        
+            }
+
+            catch(error){
+                error.status = error.status || 500;
+                next(error);
+            }
+        }
+    }
+
+    catch(error){
+        error.status = error.status || 500;
+        next(error);
+    }   
+};
+
+
+async function getOneUser(userID, next){
+    try {
+        const getUser = await tableUsers.findOne({
+            where: { id: userID },                  //Busca pelo ID
+            attributes: { exclude: ['password'] }   //Exclui o campo senha
+        });
+
+        if(!getUser){
+            const error = new Error("Usuário não encontrado no DB...");
+            error.status = 404;
+            next(error);
+            return;
+        }
+
+        return getUser;
+    }
+    
+    catch(error){
+        error.status = error.status || 500;
+        next(error);
+    }
+}
+
+async function getAllUser(next){
+    try {
+        const selectAll = await tableUsers.findAll({
+            attributes: { exclude: ['password'] }       // Exclui a coluna de senha
+        });
+
+        if(!selectAll){
+            const error = new Error("Erro ao buscar usuários do DB...");
+            error.status = 404;
+            next(error);
+            return;
+        }
+
+        return selectAll;
+    }
+    
+    catch(error){
+        error.status = error.status || 500;
+        next(error);
+    } 
+}
+
+
+module.exports = { userLogin, userCreate, userEdit, userDelete, getOneUser, getAllUser };

@@ -1,0 +1,54 @@
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { productsRequest, fetchProducts } from '../../redux/products/slice';
+import './index.css';
+import { useNavigate } from 'react-router-dom';
+
+export default function Products()
+{
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const [id, setID] = useState();
+    const [name, setName] = useState();
+    const [way, setWay] = useState();
+    const [price, setPrice] = useState();
+    const [description, setDescription] = useState();
+    const [type, setType] = useState();
+    const [createAt, setCreateAt] = useState();
+    const [products, setProducts] = useState(useSelector((state) => state.product.products));
+
+    const error = useSelector((state) => state.product.error);
+    const isLoggedIn = useSelector((state) => state.product.isLoggedIn);
+    //const checkProducts = setProducts(useSelector((state) => state.product.products));
+
+    useEffect(()=>{
+        console.log("Buscando produtos...");
+        dispatch(fetchProducts({
+            type: "products",
+        }));
+    },[]);
+
+    return(
+        <div className="containerSection">
+            <h2 className="commumtitle">Produtos:</h2>
+
+
+            {products.map((product) => (
+            <div key={product.id} className="productItem">
+                <h3>{product.name}</h3>
+                <p><strong>Preço:</strong> R$ {product.price}</p>
+                <p><strong>Descrição:</strong> {product.description}</p>
+                <p><strong>Tipo:</strong> {product.type}</p>
+                <p><strong>Data de Criação:</strong> {product.createAt}</p>
+            </div>
+            ))}
+
+
+            {error && <p>{error}</p>}
+
+        </div>
+    );
+
+}
